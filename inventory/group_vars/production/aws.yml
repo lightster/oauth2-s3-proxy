@@ -1,0 +1,10 @@
+---
+
+aws_tag_environment: "Production"
+
+aws_name_prefix: hub-prod-
+
+aws_cidr_block: 10.10.0.0/16
+aws_region: us-east-1
+aws_access_key: "{{ vault_aws_access_key }}"
+aws_secret_key: "{{ vault_aws_secret_key }}"

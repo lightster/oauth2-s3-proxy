@@ -1,0 +1,8 @@
+[localhost]
+localhost
+
+[vpc]
+
+[production:children]
+localhost
+vpc

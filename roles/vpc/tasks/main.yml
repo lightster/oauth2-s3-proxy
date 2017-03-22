@@ -1,0 +1,42 @@
+---
+
+- name: Setup VPC
+  ec2_vpc_net:
+    state: present
+    cidr_block: "{{ aws_cidr_block }}"
+    name: "{{ aws_vpc_prefix }}"
+
+    resource_tags:
+      App: "{{ aws_tag_app }}"
+      Environment: "{{ aws_tag_environment }}"
+      VPC: "{{ aws_vpc_prefix }}"
+
+    region: "{{ aws_region }}"
+    access_key: "{{ aws_access_key }}"
+    secret_key: "{{ aws_secret_key }}"
+  register: aws_vpc
+
+- name: Setup internet gateway
+  ec2_vpc_igw:
+    vpc_id: "{{ aws_vpc.vpc.id }}"
+    state: present
+
+    region: "{{ aws_region }}"
+    access_key: "{{ aws_access_key }}"
+    secret_key: "{{ aws_secret_key }}"
+  register: aws_igw
+
+- name: Set tags on internet gateway
+  ec2_tag:
+    resource: "{{ aws_igw.gateway_id }}"
+    state: present
+
+    tags:
+      Name: "{{ aws_vpc_prefix }} Internet Gateway"
+      App: "{{ aws_tag_app }}"
+      Environment: "{{ aws_tag_environment }}"
+      VPC: "{{ aws_vpc_prefix }}"
+
+    region: "{{ aws_region }}"
+    access_key: "{{ aws_access_key }}"
+    secret_key: "{{ aws_secret_key }}"

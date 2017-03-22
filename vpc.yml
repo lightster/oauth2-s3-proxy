@@ -1,0 +1,7 @@
+---
+
+- name: setup the VPC
+  hosts: localhost
+  connection: local
+  roles:
+    - vpc

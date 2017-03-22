@@ -1,0 +1,6 @@
+---
+
+aws_tag_app: "Hub"
+
+aws_vpc_prefix: "{{ aws_tag_app }}"
+aws_tag_environment: "Production"
