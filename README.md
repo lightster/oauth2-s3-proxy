@@ -60,13 +60,13 @@ This Ansible playbook sets up oauth2_proxy on AWS EC2 instances to proxy a web s
 2. Select "Users" in the left navigation
 3. Select the "Add user" button near the top of the page
 4. **User details**
-  1. Enter `oauth2-s3-proxy-ansible` as the username
-  2. For access type, select "Programmatic access"
-  3. Select "Next: Permissions"
+    1. Enter `oauth2-s3-proxy-ansible` as the username
+    2. For access type, select "Programmatic access"
+    3. Select "Next: Permissions"
 5. **Permissions**
-  1. Select "Attach existing policies directly" icon near top of the page
-  2. Search for and select `oauth2-s3-proxy-ansible`
-  3. Select "Next: Review"
+    1. Select "Attach existing policies directly" icon near top of the page
+    2. Search for and select `oauth2-s3-proxy-ansible`
+    3. Select "Next: Review"
 6. Select "Create User"
 7. Download the credentials somewhere secure using the `Download .csv` button
 
