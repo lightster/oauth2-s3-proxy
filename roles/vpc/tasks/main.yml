@@ -40,3 +40,40 @@
     region: "{{ aws_region }}"
     access_key: "{{ aws_access_key }}"
     secret_key: "{{ aws_secret_key }}"
+
+- name: Import SSH key to AWS
+  ec2_key:
+    name: "{{ aws_name_prefix }}ssh-key"
+    key_material: "{{ item }}"
+
+    region: "{{ aws_region }}"
+    access_key: "{{ aws_access_key }}"
+    secret_key: "{{ aws_secret_key }}"
+  with_file: "{{ aws_ssh_key_file }}"
+
+- name: Create security group for webauth instances
+  ec2_group:
+    name: "{{ aws_name_prefix }}webauth"
+    description: "Created via ansible {{ ansible_date_time.iso8601_micro }}"
+    vpc_id: "{{ aws_vpc.vpc.id }}"
+
+    rules:
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: 0.0.0.0/0
+
+    region: "{{ aws_region }}"
+    access_key: "{{ aws_access_key }}"
+    secret_key: "{{ aws_secret_key }}"
+  register: aws_webauth_security_group
+
+- name: Create and populate zones
+  include: zone.yml
+  with_dict: "{{ aws_zones }}"
+  loop_control:
+    loop_var: zone

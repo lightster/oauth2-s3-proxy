@@ -1,0 +1,88 @@
+---
+
+- name: Setup subnet
+  ec2_vpc_subnet:
+    state: present
+    vpc_id: "{{ aws_vpc.vpc.id }}"
+    cidr: "{{ zone.value.public_cidr }}"
+    az: "{{ zone.value.aws_zone }}"
+
+    resource_tags:
+      Name: "{{ aws_vpc_prefix }} Public {{ zone.value.tag_suffix }}"
+      App: "{{ aws_tag_app }}"
+      Environment: "{{ aws_tag_environment }}"
+      VPC: "{{ aws_vpc_prefix }}"
+
+    region: "{{ aws_region }}"
+    access_key: "{{ aws_access_key}}"
+    secret_key: "{{ aws_secret_key }}"
+  register: aws_subnet
+
+- name: Setup route table
+  ec2_vpc_route_table:
+    vpc_id: "{{ aws_vpc.vpc.id }}"
+    subnets:
+      - "{{ aws_subnet.subnet.id }}"
+    routes:
+      - dest: 0.0.0.0/0
+        gateway_id: "{{ aws_igw.gateway_id }}"
+
+    tags:
+      Name: "{{ aws_vpc_prefix }} Public {{ zone.value.tag_suffix }}"
+      App: "{{ aws_tag_app }}"
+      Environment: "{{ aws_tag_environment }}"
+      VPC: "{{ aws_vpc_prefix }}"
+
+    region: "{{ aws_region }}"
+    access_key: "{{ aws_access_key}}"
+    secret_key: "{{ aws_secret_key }}"
+  register: aws_route_table
+
+- name: Create EC2 instance
+  ec2:
+    instance_type: "{{ aws_webauth_instance_type }}"
+    image: ami-0b33d91d
+    exact_count: 1
+
+    vpc_subnet_id: "{{ aws_subnet.subnet.id }}"
+    key_name: "{{ aws_name_prefix }}ssh-key"
+    group: "{{ aws_name_prefix }}webauth"
+
+    instance_tags:
+      Name: "{{ aws_vpc_prefix }} Web Auth"
+      App: "{{ aws_tag_app }}"
+      Environment: "{{ aws_tag_environment }}"
+      VPC: "{{ aws_vpc_prefix }}"
+      Role: "webauth"
+      Zone: "{{ zone.value.aws_zone }}"
+    count_tag:
+      VPC: "{{ aws_vpc_prefix }}"
+      Zone: "{{ zone.value.aws_zone }}"
+
+    region: "{{ aws_region }}"
+    access_key: "{{ aws_access_key }}"
+    secret_key: "{{ aws_secret_key }}"
+  register: aws_webauth_instance_list
+
+- name: Associate new elastic IP with instance
+  ec2_eip:
+    device_id: "{{ aws_ec2_instance.id }}"
+    reuse_existing_ip_allowed: True
+    in_vpc: True
+
+    region: "{{ aws_region }}"
+    access_key: "{{ aws_access_key }}"
+    secret_key: "{{ aws_secret_key }}"
+  with_items: "{{ aws_webauth_instance_list.tagged_instances }}"
+  loop_control:
+    loop_var: aws_ec2_instance
+  register: aws_webauth_eip_list
+
+- name: Wait for SSH to be available
+  wait_for:
+    port: 22
+    host: "{{ aws_eip.public_ip }}"
+    timeout: 90
+  with_items: "{{ aws_webauth_eip_list.results }}"
+  loop_control:
+    loop_var: aws_eip

@@ -8,3 +8,17 @@ aws_cidr_block: 10.10.0.0/16
 aws_region: us-east-1
 aws_access_key: "{{ vault_aws_access_key }}"
 aws_secret_key: "{{ vault_aws_secret_key }}"
+
+aws_ssh_key_file: "~/.ssh/id_rsa.lightster-mbpr.pub"
+
+aws_webauth_instance_type: t2.micro
+
+aws_zones:
+  us_east_1a:
+    aws_zone: us-east-1a
+    public_cidr: 10.10.100.0/24
+    tag_suffix: "A"
+  us_east_1b:
+    aws_zone: us-east-1b
+    public_cidr: 10.10.101.0/24
+    tag_suffix: "B"

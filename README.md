@@ -19,27 +19,34 @@ This Ansible playbook sets up oauth2_proxy on AWS EC2 instances to proxy a web s
         {
           "Effect": "Allow",
           "Action": [
-            "s3:CreateBucket"
-          ],
-          "Resource": [
-            "*"
-          ]
-        },
-        {
-          "Effect": "Allow",
-          "Action": [
+            "ec2:AllocateAddress",
+            "ec2:AssociateAddress",
+            "ec2:AssociateRouteTable",
             "ec2:AttachInternetGateway",
+            "ec2:AuthorizeSecurityGroupEgress",
+            "ec2:AuthorizeSecurityGroupIngress",
             "ec2:CreateInternetGateway",
+            "ec2:CreateRoute",
+            "ec2:CreateRouteTable",
+            "ec2:CreateSecurityGroup",
+            "ec2:CreateSubnet",
             "ec2:CreateTags",
             "ec2:CreateVpc",
+            "ec2:DeleteKeyPair",
+            "ec2:DescribeAddresses",
             "ec2:DescribeAvailabilityZones",
             "ec2:DescribeInstances",
             "ec2:DescribeInternetGateways",
             "ec2:DescribeKeyPairs",
+            "ec2:DescribeRouteTables",
+            "ec2:DescribeSecurityGroups",
             "ec2:DescribeSubnets",
             "ec2:DescribeTags",
             "ec2:DescribeVpcs",
-            "ec2:ModifyVpcAttribute"
+            "ec2:ImportKeyPair",
+            "ec2:ModifyVpcAttribute",
+            "ec2:RunInstances",
+            "s3:CreateBucket"
           ],
           "Resource": "*"
         }
