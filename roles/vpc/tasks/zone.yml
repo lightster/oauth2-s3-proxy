@@ -38,6 +38,16 @@
     secret_key: "{{ aws_secret_key }}"
   register: aws_route_table
 
+- name: Set tags to be used for instance
+  set_fact:
+    instance_tags:
+      Name: "{{ aws_vpc_prefix }} Web Auth"
+      App: "{{ aws_tag_app }}"
+      Environment: "{{ aws_tag_environment }}"
+      VPC: "{{ aws_vpc_prefix }}"
+      Role: "webauth"
+      Zone: "{{ zone.value.aws_zone }}"
+
 - name: Create EC2 instance
   ec2:
     instance_type: "{{ aws_webauth_instance_type }}"
@@ -48,21 +58,24 @@
     key_name: "{{ aws_name_prefix }}ssh-key"
     group: "{{ aws_name_prefix }}webauth"
 
-    instance_tags:
-      Name: "{{ aws_vpc_prefix }} Web Auth"
-      App: "{{ aws_tag_app }}"
-      Environment: "{{ aws_tag_environment }}"
-      VPC: "{{ aws_vpc_prefix }}"
-      Role: "webauth"
-      Zone: "{{ zone.value.aws_zone }}"
+    instance_tags: "{{ instance_tags }}"
     count_tag:
-      VPC: "{{ aws_vpc_prefix }}"
-      Zone: "{{ zone.value.aws_zone }}"
+      VPC: "{{ instance_tags.VPC }}"
+      Zone: "{{ instance_tags.Zone }}"
 
     region: "{{ aws_region }}"
     access_key: "{{ aws_access_key }}"
     secret_key: "{{ aws_secret_key }}"
   register: aws_webauth_instance_list
+
+- name: Make sure instance's tags are up-to-date
+  ec2_tag:
+    resource: "{{ aws_webauth_instance_list.tagged_instances[0].id }}"
+    tags: "{{ instance_tags }}"
+
+    region: "{{ aws_region }}"
+    access_key: "{{ aws_access_key }}"
+    secret_key: "{{ aws_secret_key }}"
 
 - name: Associate new elastic IP with instance
   ec2_eip:
