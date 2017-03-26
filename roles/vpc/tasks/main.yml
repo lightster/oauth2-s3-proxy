@@ -77,3 +77,72 @@
   with_dict: "{{ aws_zones }}"
   loop_control:
     loop_var: zone
+
+- name: Initialize list of instance IDs and zones
+  set_fact:
+    instance_ids: []
+    subnet_ids: []
+
+- name: Get list of EC2 instances in VPC
+  ec2_remote_facts:
+    filters:
+      instance-state-name: running
+      "tag:VPC": "{{ aws_vpc_prefix }}"
+
+    region: "{{ aws_region }}"
+    access_key: "{{ aws_access_key }}"
+    secret_key: "{{ aws_secret_key }}"
+  register: aws_ec2_instances
+
+- name: Generate list of IDs for EC2 instances in VPC
+  set_fact:
+    instance_ids: "{{ instance_ids + [item.id] }}"
+  with_items: "{{ aws_ec2_instances.instances }}"
+  changed_when: False
+
+- name: Get list of subnets in VPC
+  ec2_vpc_subnet_facts:
+    filters:
+      "tag:App": "{{ aws_tag_app }}"
+      "tag:Environment": "{{ aws_tag_environment }}"
+      "tag:VPC": "{{ aws_vpc_prefix }}"
+
+    region: "{{ aws_region }}"
+    access_key: "{{ aws_access_key }}"
+    secret_key: "{{ aws_secret_key }}"
+  register: aws_subnets
+
+- name: Generate list of subnet IDs
+  set_fact:
+    subnet_ids: "{{ subnet_ids + [item.id] }}"
+  with_items: "{{ aws_subnets.subnets }}"
+  changed_when: False
+
+- name: Setup load balancer
+  ec2_elb_lb:
+    name: "{{ aws_name_prefix }}webauth"
+    state: present
+    instance_ids: "{{ instance_ids }}"
+    subnets: "{{ subnet_ids }}"
+
+    listeners:
+      - protocol: http
+        load_balancer_port: 80
+        instance_protocol: http
+        instance_port: 80
+      - protocol: https
+        load_balancer_port: 443
+        instance_protocol: http
+        instance_port: 80
+        ssl_certificate_id: "{{ aws_certificate_arn }}"
+
+    tags:
+      App: "{{ aws_tag_app }}"
+      Environment: "{{ aws_tag_environment }}"
+      VPC: "{{ aws_vpc_prefix }}"
+
+    wait: yes
+
+    region: "{{ aws_region }}"
+    access_key: "{{ aws_access_key }}"
+    secret_key: "{{ aws_secret_key }}"
