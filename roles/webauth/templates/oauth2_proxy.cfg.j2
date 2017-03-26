@@ -1,0 +1,36 @@
+## OAuth2 Proxy Config File
+## https://github.com/bitly/oauth2_proxy
+
+http_address = "0.0.0.0:4180"
+upstreams = [
+  "http://127.0.0.1:80/",
+]
+
+email_domains = [
+{% for domain in auth_email_domain %}
+  "{{ domain }}",
+{% endfor %}
+]
+
+skip_auth_regex = [
+{% for skip_auth in auth_skip_auth_regex %}
+  "{{ skip_auth }}",
+{% endfor %}
+]
+
+proxy_prefix = "{{ auth_proxy_prefix | default('/auth') }}"
+
+client_id = "{{ auth_client_id }}"
+client_secret = "{{ auth_client_secret }}"
+
+{% if auth_templates_dir %}
+custom_templates_dir = "{{ auth_templates_dir }}"
+{% endif %}
+
+cookie_name = "_oauth2_proxy"
+cookie_secret = "{{ auth_cookie_secret }}"
+cookie_domain = "{{ auth_cookie_domain }}"
+cookie_expire = "168h"
+cookie_refresh = "1h"
+cookie_secure = true
+cookie_httponly = true

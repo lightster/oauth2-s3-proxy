@@ -3,6 +3,9 @@ localhost
 
 [vpc]
 
+[webauth]
+
 [production:children]
 localhost
 vpc
+webauth

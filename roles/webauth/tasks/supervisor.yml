@@ -1,0 +1,57 @@
+---
+
+- name: Install supervisor
+  pip:
+    name: supervisor
+    version: 3.1.3
+  become: true
+
+- name: Make supervisor directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+    - /etc/supervisor
+    - /etc/supervisor/conf.d
+    - /var/log/supervisor
+    - /var/run/supervisor
+  become: true
+
+- name: Install supervisor configs
+  template:
+    src: "{{ item.file }}.j2"
+    dest: "/etc/{{ item.file }}"
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  with_items:
+    - file: init.d/supervisor
+      mode: "0744"
+    - file: supervisor/supervisord.conf
+      mode: "0644"
+    - file: sysconfig/supervisord
+      mode: "0644"
+  become: true
+  notify: reload supervisor
+
+- name: Create symlinks to supervisor binaries
+  file:
+    src: "/usr/local/bin/{{ item }}"
+    dest: "/usr/bin/{{ item }}"
+    owner: root
+    group: root
+    state: link
+  with_items:
+    - supervisorctl
+    - supervisord
+  become: true
+
+- name: Enable supervisor
+  service:
+    name: supervisor
+    state: started
+    enabled: true
+  become: true

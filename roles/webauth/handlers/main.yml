@@ -1,0 +1,7 @@
+---
+
+- name: reload supervisor
+  service:
+    name: supervisor
+    state: reloaded
+  become: true

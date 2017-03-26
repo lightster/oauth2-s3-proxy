@@ -1,0 +1,14 @@
+---
+
+auth_email_domain: "{{ vault_auth_email_domain }}"
+auth_skip_auth_regex: "{{ vault_auth_skip_auth_regex }}"
+
+auth_client_id: "{{ vault_auth_client_id }}"
+auth_client_secret: "{{ vault_auth_client_secret }}"
+
+auth_templates_dir: ""
+
+auth_cookie_secret: "{{ vault_auth_cookie_secret }}"
+auth_cookie_domain: "{{ vault_auth_cookie_domain }}"
+
+#python -c 'import os,base64; print base64.b64encode(os.urandom(16))'

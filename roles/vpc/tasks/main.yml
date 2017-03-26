@@ -66,6 +66,10 @@
         from_port: 80
         to_port: 80
         cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 4180
+        to_port: 4180
+        cidr_ip: 0.0.0.0/0
 
     region: "{{ aws_region }}"
     access_key: "{{ aws_access_key }}"
@@ -93,6 +97,15 @@
     access_key: "{{ aws_access_key }}"
     secret_key: "{{ aws_secret_key }}"
   register: aws_ec2_instances
+
+- name: Add EC2 instances to inventory
+  add_host:
+    name: "{{ item.public_ip_address or item.private_ip_address }}"
+    ansible_host: "{{ item.public_ip_address or item.private_ip_address }}"
+    groups: "{{ item.tags.Role }}"
+    aws_instance: "{{ item }}"
+  with_items: "{{ aws_ec2_instances.instances }}"
+  changed_when: False
 
 - name: Generate list of IDs for EC2 instances in VPC
   set_fact:

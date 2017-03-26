@@ -5,3 +5,8 @@
   connection: local
   roles:
     - vpc
+
+- name: setup the webauth instances
+  hosts: webauth
+  roles:
+    - webauth

@@ -84,6 +84,35 @@ This Ansible playbook sets up oauth2_proxy on AWS EC2 instances to proxy a web s
 2. Select the certificate that matches the domain you are using to serve your S3 site
 3. Find and make note of the certificate ARN
 
+## Prepare Google Project
+
+### Create a Google API Project
+
+1. [Go to Google API Manager](https://console.developers.google.com/apis/)
+2. Next to the "Google APIs" logo, select "Project"
+3. In the dropdown menu, select "Create project"
+4. Enter a project name and create the project
+5. Wait a few seconds for the project creation to complete
+
+### Setup OAuth Consent Screen for Project
+
+1. Select "Credentials" in left navigation
+2. Select "OAuth consent screen" in top sub navigation
+3. Choose an email address to use for the project contact
+4. Enter a product name, such as "Hub"
+5. Use the "Save" button to save the consent screen settings
+
+### Setup Credentials for Project
+
+1. Select "Credentials" in left navigation
+2. Select the "Create Credentials" button in the middle of the page
+3. Select "OAuth client ID"
+4. Select "Web application" as application type
+5. Enter a client ID name, such as "Hub"
+6. Enter an authorized redirect URI, using your subdomain in place of hub.example.com: `https://hub.example.com/auth/callback`
+7. Use the "Create" button to save the client ID settings
+8. Make note of the client ID and client secret that Google provides upon client ID creation
+
 ## Prepare Playbook
 
 All commands below should be ran in the root of your `oauth2-s3-proxy` clone unless otherwise noted.
@@ -100,7 +129,7 @@ First, reset the encrypted config files to their templates:
 make init
 ```
 
-Next, use these values to Use the following command to edit the encrypted file that configures the secure values the playbook uses for configuring the VPC:
+Next, use the following command to edit the encrypted file that configures the secure values the playbook uses for setting up AWS:
 ```bash
 ansible-vault edit inventory/group_vars/production/aws.vault.yml
 ```
@@ -108,3 +137,46 @@ ansible-vault edit inventory/group_vars/production/aws.vault.yml
 In the `aws.vault.yml` file, be sure to:
  - Update the access key ID and access secret, which can be found in the `credentials.csv` file you downloaded earlier
  - Update the certificate ARN using the certificate ARN you made note of earlier
+
+Then generate a cookie secret using the following command:
+```bash
+python -c 'import os,base64; print base64.b64encode(os.urandom(16))'
+```
+
+Make a short-term note of the cookie secret and use the following command to edit the secure values used for OAuth2 Proxy:
+```bash
+ansible-vault edit inventory/group_vars/production/oauth2_proxy.vault.yml
+```
+
+Your `oauth2_proxy.vault.yml` file will look something like:
+```yaml
+---
+
+# The list of domains that should be granted access to the
+# site after logging in with an email matching one of these
+# domains
+vault_auth_email_domain:
+ - "example.com" # assumes G Suite email addresses like you@example.com
+
+# Paths that should be accessible without authenticating. This
+# is useful if you have assets you want to be useable on the
+# login page
+vault_auth_skip_auth_regex:
+ - "/assets"
+
+# Google OAuth client ID and secret
+vault_auth_client_id: "a-google-provided-id.apps.googleusercontent.com"
+vault_auth_client_secret: "a-google-provided-secret"
+
+# The cookie secret used for keeping the cookie secure
+vault_auth_cookie_secret: "the-python-generated-cookie-secret"
+
+# The domain/subdomain to restrict the auth cookie to
+vault_auth_cookie_domain: "hub.example.com"
+```
+
+## Run the Playbook
+
+```bash
+make vpc
+```

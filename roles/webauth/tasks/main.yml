@@ -1,0 +1,4 @@
+---
+
+- include: oauth2_proxy.yml
+- include: supervisor.yml
