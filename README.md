@@ -46,6 +46,7 @@ This Ansible playbook sets up oauth2_proxy on AWS EC2 instances to proxy a web s
             "ec2:ImportKeyPair",
             "ec2:ModifyVpcAttribute",
             "ec2:RunInstances",
+            "elasticloadbalancing:AddTags",
             "elasticloadbalancing:CreateLoadBalancer",
             "elasticloadbalancing:DescribeInstanceHealth",
             "elasticloadbalancing:DescribeLoadBalancers",
