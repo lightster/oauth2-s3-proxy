@@ -1,5 +1,5 @@
 ---
 
 - include: nginx.yml
-- include: oauth2_proxy.yml
 - include: supervisor.yml
+- include: oauth2_proxy.yml

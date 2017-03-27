@@ -30,8 +30,27 @@
   template:
     src: "oauth2_proxy.cfg.j2"
     dest: "/etc/oauth2_proxy.cfg"
+    owner: nginx
+    group: nginx
+    mode: "0600"
+  become: true
+  notify: reload supervisor
+
+- name: Make oauth2_proxy log directory
+  file:
+    path: "/var/log/oauth2_proxy"
+    state: directory
+    owner: nginx
+    group: nginx
+    mode: 0755
+  become: true
+
+- name: Install oauth2_proxy-hub supervisor config
+  template:
+    src: "supervisor/conf.d/oauth2_proxy-hub.conf.j2"
+    dest: "/etc/supervisor/conf.d/oauth2_proxy-hub.conf"
     owner: root
     group: root
-    mode: "0600"
+    mode: "0644"
   become: true
   notify: reload supervisor

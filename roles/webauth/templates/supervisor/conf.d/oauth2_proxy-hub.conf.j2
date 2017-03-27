@@ -1,0 +1,17 @@
+[program:oauth2_proxy-hub]
+command=/usr/bin/oauth2_proxy -config=/etc/oauth2_proxy.cfg
+process_name=%(program_name)s_%(process_num)d
+numprocs=1
+numprocs_start=0
+autorestart=true
+autostart=true
+startsecs=0
+startretries=3
+user=nginx
+stopsignal=TERM
+stderr_logfile=/var/log/oauth2_proxy/%(program_name)s_%(process_num)d.error.log
+stderr_logfile_maxbytes=50MB
+stderr_logfile_backups=5
+stdout_logfile=/var/log/oauth2_proxy/%(program_name)s_%(process_num)d.debug.log
+stdout_logfile_maxbytes=50MB
+stdout_logfile_backups=5
