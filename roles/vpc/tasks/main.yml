@@ -80,6 +80,27 @@
     secret_key: "{{ aws_secret_key }}"
   register: aws_webauth_security_group
 
+- name: Create security group for load balancer instances
+  ec2_group:
+    name: "{{ aws_name_prefix }}webauth-loadbalancer"
+    description: "Created via ansible {{ ansible_date_time.iso8601_micro }}"
+    vpc_id: "{{ aws_vpc.vpc.id }}"
+
+    rules:
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: 0.0.0.0/0
+
+    region: "{{ aws_region }}"
+    access_key: "{{ aws_access_key }}"
+    secret_key: "{{ aws_secret_key }}"
+  register: aws_webauth_lb_security_group
+
 - name: Create and populate zones
   include: zone.yml
   with_dict: "{{ aws_zones }}"
@@ -141,6 +162,7 @@
     state: present
     instance_ids: "{{ instance_ids }}"
     subnets: "{{ subnet_ids }}"
+    security_group_ids: "{{ aws_webauth_lb_security_group.group_id }}"
 
     listeners:
       - protocol: http
