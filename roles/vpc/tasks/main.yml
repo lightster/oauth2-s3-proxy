@@ -175,6 +175,15 @@
         instance_port: 443
         ssl_certificate_id: "{{ aws_certificate_arn }}"
 
+    health_check:
+      ping_protocol: http
+      ping_port: 443
+      ping_path: "/ping"
+      response_timeout: 5
+      interval: 30
+      unhealthy_threshold: 2
+      healthy_threshold: 10
+
     tags:
       App: "{{ aws_tag_app }}"
       Environment: "{{ aws_tag_environment }}"
