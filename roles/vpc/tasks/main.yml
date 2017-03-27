@@ -67,6 +67,10 @@
         to_port: 80
         cidr_ip: 0.0.0.0/0
       - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
         from_port: 4180
         to_port: 4180
         cidr_ip: 0.0.0.0/0
@@ -146,7 +150,7 @@
       - protocol: https
         load_balancer_port: 443
         instance_protocol: http
-        instance_port: 80
+        instance_port: 443
         ssl_certificate_id: "{{ aws_certificate_arn }}"
 
     tags:

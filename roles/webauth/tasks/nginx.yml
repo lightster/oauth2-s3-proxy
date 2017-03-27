@@ -1,0 +1,21 @@
+---
+
+- name: Install nginx
+  yum:
+    name: nginx
+    state: present
+  notify: reload nginx
+  become: true
+
+- name: Install nginx configs
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/{{ item }}"
+    owner: root
+    group: root
+    mode: "0644"
+  with_items:
+    - nginx/conf.d/hub.conf
+    - nginx/nginx.conf
+  become: true
+  notify: reload nginx
