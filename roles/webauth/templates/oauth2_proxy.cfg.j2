@@ -18,7 +18,7 @@ skip_auth_regex = [
 {% endfor %}
 ]
 
-proxy_prefix = "{{ auth_proxy_prefix | default('/auth') }}"
+proxy-prefix = "{{ auth_proxy_prefix }}"
 
 client_id = "{{ auth_client_id }}"
 client_secret = "{{ auth_client_secret }}"
