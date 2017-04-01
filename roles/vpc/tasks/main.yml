@@ -194,3 +194,11 @@
     region: "{{ aws_region }}"
     access_key: "{{ aws_access_key }}"
     secret_key: "{{ aws_secret_key }}"
+
+- name: Setup S3 bucket
+  s3_bucket:
+    name: "{{ aws_s3_bucket_name }}"
+
+    region: "{{ aws_region }}"
+    access_key: "{{ aws_access_key }}"
+    secret_key: "{{ aws_secret_key }}"

@@ -61,6 +61,13 @@ This Ansible playbook sets up oauth2_proxy on AWS EC2 instances to proxy a web s
             "s3:CreateBucket"
           ],
           "Resource": "*"
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "s3:*"
+          ],
+          "Resource": "arn:aws:s3:::YOUR_BUCKET_NAME"
         }
       ]
     }

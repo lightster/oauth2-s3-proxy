@@ -9,6 +9,9 @@ aws_region: us-east-1
 aws_access_key: "{{ vault_aws_access_key }}"
 aws_secret_key: "{{ vault_aws_secret_key }}"
 
+aws_s3_bucket_name: "lightster-hub-prod"
+aws_s3_bucket_prefix: "_site/"
+
 aws_ssh_key_file: "~/.ssh/id_rsa.lightster-mbpr.pub"
 
 aws_webauth_instance_type: t2.micro
