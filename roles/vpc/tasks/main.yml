@@ -195,9 +195,32 @@
     access_key: "{{ aws_access_key }}"
     secret_key: "{{ aws_secret_key }}"
 
+- name: Set variables for use with S3 policy
+  set_fact:
+    s3_policy:
+      bucket_name: "{{ aws_s3_bucket_name }}"
+      bucket_prefix: "{{ aws_s3_bucket_prefix }}"
+      vpc_id: "{{ aws_vpc.vpc.id }}"
+
 - name: Setup S3 bucket
   s3_bucket:
     name: "{{ aws_s3_bucket_name }}"
+    policy: "{{ lookup('template','./s3/hub-policy.json') }}"
+
+    tags:
+      App: "{{ aws_tag_app }}"
+      Environment: "{{ aws_tag_environment }}"
+
+    region: "{{ aws_region }}"
+    access_key: "{{ aws_access_key }}"
+    secret_key: "{{ aws_secret_key }}"
+
+- name: Enable web site hosting for S3 bucket
+  s3_website:
+    name: "{{ aws_s3_bucket_name }}"
+
+    suffix: index.html
+    state: present
 
     region: "{{ aws_region }}"
     access_key: "{{ aws_access_key }}"
