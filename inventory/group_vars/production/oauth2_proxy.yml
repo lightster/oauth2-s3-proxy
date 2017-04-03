@@ -6,7 +6,7 @@ auth_skip_auth_regex: "{{ vault_auth_skip_auth_regex }}"
 auth_client_id: "{{ vault_auth_client_id }}"
 auth_client_secret: "{{ vault_auth_client_secret }}"
 
-auth_templates_dir: ""
+auth_templates_url: "http://{{ aws_s3_bucket_name }}.s3-website-{{ aws_region }}.amazonaws.com/{{ aws_s3_bucket_prefix }}auth"
 
 auth_cookie_secret: "{{ vault_auth_cookie_secret }}"
 auth_cookie_domain: "{{ vault_auth_cookie_domain }}"

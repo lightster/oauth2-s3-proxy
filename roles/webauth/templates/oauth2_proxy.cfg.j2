@@ -23,7 +23,7 @@ proxy-prefix = "{{ auth_proxy_prefix }}"
 client_id = "{{ auth_client_id }}"
 client_secret = "{{ auth_client_secret }}"
 
-{% if auth_templates_dir %}
+{% if auth_templates_dir != '' %}
 custom_templates_dir = "{{ auth_templates_dir }}"
 {% endif %}
 

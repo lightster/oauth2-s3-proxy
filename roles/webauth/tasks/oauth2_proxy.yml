@@ -26,6 +26,30 @@
     state: absent
   become: true
 
+- name: Define the directory to store the auth templates
+  set_fact:
+    auth_templates_dir: '/var/www/html/hub/auth'
+  when: "{{ auth_templates_url != '' }}"
+
+- name: Create directory for auth templates
+  file:
+    path: "{{ auth_templates_dir }}"
+    state: directory
+    recurse: true
+  when: "{{ auth_templates_dir != '' }}"
+  become: true
+
+- name: Download auth templates
+  get_url:
+    url: "{{ auth_templates_url }}/{{ item }}"
+    dest: "{{ auth_templates_dir }}/{{ item }}"
+  when: "{{ auth_templates_url != '' }}"
+  with_items:
+    - sign_in.html
+    - error.html
+  become: true
+  notify: reload supervisor
+
 - name: Install oauth2_proxy config
   template:
     src: "oauth2_proxy.cfg.j2"

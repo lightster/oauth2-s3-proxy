@@ -1,3 +1,5 @@
 ---
 
 auth_proxy_prefix: '/auth'
+auth_templates_url: ""
+auth_templates_dir: ""
