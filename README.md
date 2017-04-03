@@ -191,3 +191,35 @@ vault_auth_cookie_domain: "hub.example.com"
 ```bash
 make vpc
 ```
+
+# Finish up AWS setup
+
+Ansible does not support some of the features AWS provides, so there are a few manual steps required to finish setting up the proxy.
+
+## Create an endpoint between the VPC and S3
+
+1. [Go to VPC management](https://console.aws.amazon.com/vpc/home) in the AWS Console
+2. Select "Endpoints" in the left navigation
+3. Select the "Create Endpoint" button near the top of the page
+4. Select the "Hub" VPC in the VPC dropdown
+5. Select the "com.amazonaws.us-east-1.s3" service in the Service dropdown
+6. For policy, select "Custom"
+    ```json
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": "*",
+          "Action": "s3:*",
+          "Resource": [
+            "arn:aws:s3:::YOUR_BUCKET_NAME",
+            "arn:aws:s3:::YOUR_BUCKET_NAME/*"
+          ]
+        }
+      ]
+    }
+    ```
+7. Select "Next Step"
+8. In the list of route tables, select both "Hub Public A" and "Hub Public B"
+9. Select "Create Endpoint" to finish the endpoint creation process
